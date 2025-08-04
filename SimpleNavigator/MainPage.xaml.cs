@@ -4,7 +4,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Maui.Dispatching;
 
-
 namespace SimpleNavigator
 {
     public partial class MainPage : ContentPage
@@ -15,7 +14,7 @@ namespace SimpleNavigator
         private bool isUpdatingLocation = false;
         private CancellationTokenSource gpsCancellationTokenSource;
         private Location lastKnownLocation;
- 
+
         public MainPage()
         {
             InitializeComponent();
@@ -32,13 +31,21 @@ namespace SimpleNavigator
         {
             base.OnDisappearing();
             StopGpsUpdates();
-            Compass.Stop();
+            if (isCompassActive)
+            {
+                Compass.Stop();
+                isCompassActive = false;
+            }
         }
 
         private void OnExitClicked(object sender, EventArgs e)
         {
             StopGpsUpdates();
-            Compass.Stop();
+            if (isCompassActive)
+            {
+                Compass.Stop();
+                isCompassActive = false;
+            }
             Application.Current.Quit();
         }
 
@@ -50,7 +57,7 @@ namespace SimpleNavigator
             try
             {
                 gpsCancellationTokenSource = new CancellationTokenSource();
-                var request = new GeolocationRequest(GeolocationAccuracy.Medium); // can change to High for better accuracy but more battery consumption 
+                var request = new GeolocationRequest(GeolocationAccuracy.Medium);
 
                 var location = await Geolocation.Default.GetLocationAsync(request, gpsCancellationTokenSource.Token);
 
@@ -60,13 +67,17 @@ namespace SimpleNavigator
                     if (lastKnownLocation != null)
                     {
                         distance = location.CalculateDistance(lastKnownLocation, DistanceUnits.Kilometers);
-
                     }
 
                     lastKnownLocation = location;
-                    GpsLabel.Text = $"Current GPS : {location.Latitude:F6}, {location.Longitude:F6}";
 
-                    if (distance > 5) // update frequency based on distance / time
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        GpsLabel.Text = $"Current GPS: {location.Latitude:F6}, {location.Longitude:F6}";
+                        UpdateDistanceDisplay();
+                    });
+
+                    if (distance > 0.005) // 5 meters
                     {
                         gpsTimer.Interval = TimeSpan.FromSeconds(1);
                     }
@@ -77,16 +88,25 @@ namespace SimpleNavigator
                 }
                 else
                 {
-                    GpsLabel.Text = "GPS: Unavailable (pls wait...)";
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        GpsLabel.Text = "GPS: Unavailable (pls wait...)";
+                    });
                 }
             }
             catch (OperationCanceledException)
             {
-                GpsLabel.Text = "GPS: Update canceled";
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    GpsLabel.Text = "GPS: Update canceled";
+                });
             }
             catch (Exception ex)
             {
-                GpsLabel.Text = $"GPS: Unavailable ({ex.Message})";
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    GpsLabel.Text = $"GPS: Unavailable ({ex.Message})";
+                });
                 Console.WriteLine($"GPS Error: {ex}");
             }
             finally
@@ -99,8 +119,9 @@ namespace SimpleNavigator
 
         private void OnResetClicked(object sender, EventArgs e)
         {
-            TargetPosition = null;
+            targetLocation = null; 
             TargetLocationLabel.Text = "Target GPS: N/A";
+            DistanceLabel.Text = "Distance: N/A";
 
             if (isCompassActive)
             {
@@ -130,7 +151,7 @@ namespace SimpleNavigator
             if (gpsTimer == null)
             {
                 gpsTimer = Dispatcher.CreateTimer();
-                gpsTimer.Interval = TimeSpan.FromSeconds(5); // Default update frequency in seconds
+                gpsTimer.Interval = TimeSpan.FromSeconds(5);
                 gpsTimer.Tick += async (s, e) => await UpdateGpsLocation();
             }
 
@@ -144,13 +165,14 @@ namespace SimpleNavigator
         {
             try
             {
-                var request = new GeolocationRequest(GeolocationAccuracy.High); // Pre uloženie pozície môžeme použiť vyššiu presnosť
+                var request = new GeolocationRequest(GeolocationAccuracy.High);
                 var location = await Geolocation.Default.GetLocationAsync(request);
 
                 if (location != null)
                 {
                     targetLocation = location;
                     TargetLocationLabel.Text = $"{location.Latitude:F6}, {location.Longitude:F6}";
+                    UpdateDistanceDisplay();
                 }
                 else
                 {
@@ -200,6 +222,7 @@ namespace SimpleNavigator
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 ArrowImage.Rotation = rotation;
+                UpdateDistanceDisplay();
             });
         }
 
@@ -220,5 +243,35 @@ namespace SimpleNavigator
 
         private double DegreesToRadians(double degrees) => degrees * (Math.PI / 180);
         private double RadiansToDegrees(double radians) => radians * (180 / Math.PI);
+
+        private void UpdateDistanceDisplay()
+        {
+            if (targetLocation == null || lastKnownLocation == null)
+            {
+                DistanceLabel.Text = "Distance: N/A";
+                return;
+            }
+
+            double distanceKm = lastKnownLocation.CalculateDistance(targetLocation, DistanceUnits.Kilometers);
+
+            if (distanceKm < 1.0) // Less than 1 km - show in meters
+            {
+                double distanceM = distanceKm * 1000;
+                DistanceLabel.Text = $"Distance: {distanceM:F0} m";
+
+                // Color based on distance
+                if (distanceM < 10)
+                    DistanceLabel.TextColor = Colors.LimeGreen;
+                else if (distanceM < 50)
+                    DistanceLabel.TextColor = Colors.Yellow;
+                else
+                    DistanceLabel.TextColor = Colors.Orange;
+            }
+            else // More than 1 km - show in kilometers
+            {
+                DistanceLabel.Text = $"Distance: {distanceKm:F2} km";
+                DistanceLabel.TextColor = Colors.Red;
+            }
+        }
     }
 }

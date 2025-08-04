@@ -2,36 +2,38 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SimpleNavigator.MainPage">
-
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="Black">
-            
+
             <!-- Exit-->
             <Button x:Name="ExitButton" Text="Exit" Clicked="OnExitClicked" BackgroundColor="Red" TextColor="White" />
-            
+
             <!-- Reset-->
             <Button x:Name="ResetButton" Text="Reset" Clicked="OnResetClicked" BackgroundColor="Blue" TextColor="White" />
 
             <!-- GPS Position -->
-            <Label x:Name="GpsLabel" Text="GPS: retrieving GPS data..." FontSize="16" HorizontalTextAlignment="Center" />
+            <Label x:Name="GpsLabel" Text="GPS: retrieving GPS data..." FontSize="16" HorizontalTextAlignment="Center" TextColor="White" />
 
             <!-- Compass Status -->
             <Label x:Name="CompassStatusLabel" Text="Compass: OFF" FontSize="16" TextColor="Red" HorizontalTextAlignment="Center" />
 
             <!-- Button to save target position -->
-            <Button x:Name="SaveLocationButton" Text="Save target position" Clicked="OnSaveLocationClicked"/>
+            <Button x:Name="SaveLocationButton" Text="Save target position" Clicked="OnSaveLocationClicked" BackgroundColor="Green" TextColor="White" />
 
             <!-- Target position Label -->
-            <Label x:Name="TargetPosition" Text="Target GPS position:" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
-            <Label x:Name="TargetLocationLabel" Text="-" FontSize="16" HorizontalTextAlignment="Center"/>
+            <Label x:Name="TargetPositionLabel" Text="Target GPS position:" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="White"/>
+            <Label x:Name="TargetLocationLabel" Text="-" FontSize="16" HorizontalTextAlignment="Center" TextColor="White"/>
+
+            <!-- Distance Display -->
+            <Label x:Name="DistanceLabel" Text="Distance: N/A" FontSize="20" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="White"/>
 
             <!-- Navigate Button -->
-            <Button x:Name="NavigateButton" Text="Navigate" Clicked="OnShowDirectionClicked"/>
+            <Button x:Name="NavigateButton" Text="Navigate" Clicked="OnShowDirectionClicked" BackgroundColor="Orange" TextColor="White"/>
 
             <!-- Arrow picture -->
             <Image x:Name="ArrowImage" Source="my_bw_arrow.png" HeightRequest="100" WidthRequest="100" 
-           Rotation="0" HorizontalOptions="Center" BackgroundColor="Transparent" />
-                 
+                   Rotation="0" HorizontalOptions="Center" BackgroundColor="Transparent" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
