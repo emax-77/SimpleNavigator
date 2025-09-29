@@ -115,21 +115,7 @@ namespace SimpleNavigator
             // Uloženie lokácií pred zatvorením
             SaveLocationsToStorage();
         }
-
-        private void OnExitClicked(object sender, EventArgs e)
-        {
-            StopGpsUpdates();
-            if (isCompassActive)
-            {
-                Compass.Stop();
-                isCompassActive = false;
-            }
-
-            // Uloženie lokácií pred ukončením
-            SaveLocationsToStorage();
-            Application.Current.Quit();
-        }
-
+        
         private async Task UpdateGpsLocation()
         {
             if (isUpdatingLocation) return;
@@ -198,28 +184,6 @@ namespace SimpleNavigator
             }
         }
 
-        private void OnResetClicked(object sender, EventArgs e)
-        {
-            targetLocation = null;
-            selectedLocation = null;
-            TargetLocationLabel.Text = "Target GPS: N/A";
-            DistanceLabel.Text = "Distance: N/A";
-            SavedLocationsPicker.SelectedItem = null;
-
-            if (isCompassActive)
-            {
-                Compass.Stop();
-                isCompassActive = false;
-                CompassStatusLabel.Text = "Compass: OFF";
-                CompassStatusLabel.TextColor = Colors.Red;
-            }
-
-            StopGpsUpdates();
-            gpsTimer = null;
-            StartGpsUpdates();
-            ArrowImage.Rotation = 0;
-        }
-
         private void StopGpsUpdates()
         {
             if (gpsTimer != null)
@@ -266,6 +230,7 @@ namespace SimpleNavigator
                         };
 
                         savedLocations.Add(savedLocation);
+                        SaveLocationsToStorage();
                         UpdateLocationListVisibility();
 
                         await DisplayAlert("Success", $"Location '{name}' saved successfully!", "OK");
@@ -308,6 +273,7 @@ namespace SimpleNavigator
                         };
 
                         savedLocations.Add(savedLocation);
+                        SaveLocationsToStorage();
                         UpdateLocationListVisibility();
 
                         await DisplayAlert("Success", $"Location '{name}' added successfully!", "OK");
