@@ -1,29 +1,21 @@
-﻿using Microsoft.Maui.Controls;
-using Microsoft.Maui.Devices.Sensors;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Maui.Dispatching;
+﻿
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleNavigator
 {
-    // Pomocná trieda pre JSON serializáciu
     public class LocationData
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
 
-    // Model pre uložené lokácie
     public class SavedLocation : INotifyPropertyChanged
     {
-        private string _name;
+        private string? _name;
         private double _latitude;
         private double _longitude;
 
@@ -82,14 +74,10 @@ namespace SimpleNavigator
             InitializeComponent();
             Compass.ReadingChanged += OnCompassChanged;
 
-            // Inicializácia zoznamu uložených lokácií
             savedLocations = new ObservableCollection<SavedLocation>();
             SavedLocationsPicker.ItemsSource = savedLocations;
 
-            // Načítanie lokácií zo storage pri štarte
             LoadSavedLocations();
-
-            // Skryť zoznam na začiatku ak je prázdny
             UpdateLocationListVisibility();
         }
 
@@ -98,8 +86,6 @@ namespace SimpleNavigator
             base.OnAppearing();
             StartGpsUpdates();
 
-            // Debug info o počte lokácií
-            Console.WriteLine($"OnAppearing: {savedLocations.Count} locations loaded");
         }
 
         protected override void OnDisappearing()
@@ -112,10 +98,9 @@ namespace SimpleNavigator
                 isCompassActive = false;
             }
 
-            // Uloženie lokácií pred zatvorením
             SaveLocationsToStorage();
         }
-        
+
         private async Task UpdateGpsLocation()
         {
             if (isUpdatingLocation) return;
@@ -174,7 +159,6 @@ namespace SimpleNavigator
                 {
                     GpsLabel.Text = $"GPS: Unavailable ({ex.Message})";
                 });
-                Console.WriteLine($"GPS Error: {ex}");
             }
             finally
             {
@@ -217,7 +201,6 @@ namespace SimpleNavigator
 
                 if (location != null)
                 {
-                    // Zobrazenie dialógu pre zadanie názvu
                     string name = await DisplayPromptAsync("Save Location", "Enter name for this location:", "Save", "Cancel", "My Location");
 
                     if (!string.IsNullOrWhiteSpace(name))
@@ -244,7 +227,6 @@ namespace SimpleNavigator
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"Error while saving the location: {ex.Message}", "OK");
-                Console.WriteLine($"Save Location Error: {ex}");
             }
         }
 
@@ -356,7 +338,6 @@ namespace SimpleNavigator
                     location.Latitude = lat;
                     location.Longitude = lon;
 
-                    // Aktualizovať cieľovú lokáciu ak je práve vybraná
                     if (selectedLocation == location)
                     {
                         targetLocation = new Location(lat, lon);
@@ -392,9 +373,8 @@ namespace SimpleNavigator
                     DistanceLabel.Text = "Distance: N/A";
                     SavedLocationsPicker.SelectedItem = null;
                 }
-
                 UpdateLocationListVisibility();
-                SaveLocationsToStorage(); // Uložiť zmeny
+                SaveLocationsToStorage();
                 await DisplayAlert("Success", "Location deleted successfully!", "OK");
             }
         }
@@ -469,22 +449,18 @@ namespace SimpleNavigator
         private double DegreesToRadians(double degrees) => degrees * (Math.PI / 180);
         private double RadiansToDegrees(double radians) => radians * (180 / Math.PI);
 
-        // Pomocná metóda pre parsovanie súradníc - podporuje bodku aj čiarku
         private bool TryParseCoordinate(string input, out double result)
         {
             result = 0;
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
-            // Pokus s aktuálnou kultúrou (čiarka v SK)
             if (double.TryParse(input, out result))
                 return true;
 
-            // Pokus s invariant kultúrou (bodka)
             if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
                 return true;
 
-            // Manuálna náhrada čiarky za bodku a opätovný pokus
             string normalizedInput = input.Replace(',', '.');
             if (double.TryParse(normalizedInput, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
                 return true;
@@ -492,7 +468,6 @@ namespace SimpleNavigator
             return false;
         }
 
-        // Uloženie lokácií do Preferences (trvalé úložisko)
         private void SaveLocationsToStorage()
         {
             try
@@ -507,38 +482,26 @@ namespace SimpleNavigator
                 string json = JsonSerializer.Serialize(locationList);
                 Preferences.Default.Set("SavedLocations", json);
 
-                // Overenie že sa uložilo
                 string verification = Preferences.Default.Get("SavedLocations", "");
                 bool success = verification == json;
-
-                // Debug výpis
-                Console.WriteLine($"Saving {locationList.Count} locations to storage");
-                Console.WriteLine($"JSON length: {json.Length}");
-                Console.WriteLine($"Verification: {(success ? "SUCCESS" : "FAILED")}");
-                Console.WriteLine($"JSON: {json}");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error saving locations: {ex.Message}");
             }
         }
 
-        // Načítanie lokácií z Preferences
         private void LoadSavedLocations()
         {
             try
             {
                 string json = Preferences.Default.Get("SavedLocations", "");
-                Console.WriteLine($"LoadSavedLocations called");
-                Console.WriteLine($"JSON from storage: '{json}'");
-                Console.WriteLine($"JSON length: {json.Length}");
 
                 if (!string.IsNullOrEmpty(json))
                 {
                     var locationList = JsonSerializer.Deserialize<List<LocationData>>(json);
                     if (locationList != null)
                     {
-                        Console.WriteLine($"Deserializing {locationList.Count} locations");
-
                         savedLocations.Clear(); // Vyčistiť pred načítaním
                         foreach (var item in locationList)
                         {
@@ -549,26 +512,12 @@ namespace SimpleNavigator
                                 Longitude = item.Longitude
                             };
                             savedLocations.Add(savedLocation);
-                            Console.WriteLine($"Loaded location: {item.Name} ({item.Latitude}, {item.Longitude})");
                         }
-
-                        Console.WriteLine($"Total locations in collection: {savedLocations.Count}");
                     }
-                    else
-                    {
-                        Console.WriteLine("Deserialization returned null");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No JSON data found in storage");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading locations: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                // V prípade chyby vyčistiť poškodené dáta
                 Preferences.Default.Remove("SavedLocations");
             }
         }
