@@ -519,7 +519,6 @@ namespace SimpleNavigator
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving locations: {ex.Message}");
             }
         }
 
