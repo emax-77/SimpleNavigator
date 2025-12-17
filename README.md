@@ -6,3 +6,10 @@
 
 ### Works offline - no internet access required. You need to allow GPS only.
 ***The app is still in development. New features like multilanguage support should be available by the end of 2025***
+
+## Screenshots:
+
+![screenshot1](https://github.com/user-attachments/assets/83e6a1dc-7544-4b42-980d-f73d027d9e8b)
+![screenshot2](https://github.com/user-attachments/assets/6abebacb-66bf-46f7-bd8f-f27babfbe648)
+
+
