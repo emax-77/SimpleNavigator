@@ -1,8 +1,8 @@
 # Simple navigation app for Android created in .NET MAUI with C#
-## Enter/Create/Save your destination location; the navigation will guide you to it using the rotating arrow (like a compass).
-### Suitable for cases like "Find my car". Or it can help you find the starting/target location on your hiking trip.
+## Set your destination and follow an intuitive compass-like arrow that continuously points you in the right direction.
+### Perfect for use cases like:
+- locating your parked car 
+- navigating back to a starting or target point during hiking and outdoor adventures
+
 ### Works offline - no internet access required. You need to allow GPS only.
-
-### What's new:  Location management
-
-***The app is still in development. New features will be available soon***
+***The app is still in development. New features like multilanguage support should be available by the end of 2025***
