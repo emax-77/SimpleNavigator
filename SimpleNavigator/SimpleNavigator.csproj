@@ -63,7 +63,15 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.111" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.120" />
 	</ItemGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-android' and '$(Configuration)' == 'Release'">
+		<AndroidKeyStore>true</AndroidKeyStore>
+		<AndroidSigningKeyStore>C:\Users\user\keystores\simplenavigator-upload.jks</AndroidSigningKeyStore>
+		<AndroidSigningKeyAlias>simplenavigator</AndroidSigningKeyAlias>
+		<AndroidSigningStorePass>$(ANDROID_KEYSTORE_PASSWORD)</AndroidSigningStorePass>
+		<AndroidSigningKeyPass>$(ANDROID_KEY_PASSWORD)</AndroidSigningKeyPass>
+	</PropertyGroup>
 
 </Project>
