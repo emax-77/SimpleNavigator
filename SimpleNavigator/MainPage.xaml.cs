@@ -426,7 +426,9 @@ namespace SimpleNavigator
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                ArrowImage.Rotation = rotation;
+                ArrowContainer.Rotation = rotation;                               
+                CompassRose.Rotation = -heading;                              
+                HeadingLabel.Text = $"{(int)heading}°";
                 UpdateDistanceDisplay();
             });
         }

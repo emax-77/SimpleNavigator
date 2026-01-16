@@ -41,14 +41,168 @@
                             TextColor="White" 
                             FontSize="18"/>
 
-                    <!-- Arrow picture -->
-                    <Image x:Name="ArrowImage" 
-                           Source="my_bw_arrow.png" 
-                           HeightRequest="120" 
-                           WidthRequest="120" 
-                           Rotation="0" 
-                           HorizontalOptions="Center" 
-                           BackgroundColor="Transparent" />
+                    <!-- Compass -->
+                    <Grid x:Name="CompassContainer" 
+                          HeightRequest="280" 
+                          WidthRequest="280" 
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center">
+
+                        <!-- Outer compass ring -->
+                        <Ellipse WidthRequest="280" 
+                                 HeightRequest="280"
+                                 Stroke="#FF8C00"
+                                 StrokeThickness="3"
+                                 Fill="#0a0a0a"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center" />
+
+                        <!-- Inner compass ring -->
+                        <Ellipse WidthRequest="260" 
+                                 HeightRequest="260"
+                                 Stroke="#333"
+                                 StrokeThickness="1"
+                                 Fill="Transparent"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center" />
+
+                        <!-- Rotating compass rose -->
+                        <Grid x:Name="CompassRose" 
+                              WidthRequest="240" 
+                              HeightRequest="240"
+                              Rotation="0"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Center">
+
+                            <!-- Degree marks -->
+                            <Ellipse WidthRequest="230" 
+                                     HeightRequest="230"
+                                     Stroke="#444"
+                                     StrokeThickness="1"
+                                     Fill="Transparent" />
+
+                            <!-- North  -->
+                            <Label Text="N" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold"
+                                   TextColor="#FF4444"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Start"
+                                   Margin="0,5,0,0" />
+
+                            <!-- East -->
+                            <Label Text="E" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="End"
+                                   VerticalOptions="Center"
+                                   Margin="0,0,10,0" />
+
+                            <!-- South -->
+                            <Label Text="S" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   Margin="0,0,0,5" />
+
+                            <!-- West -->
+                            <Label Text="W" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Center"
+                                   Margin="10,0,0,0" />
+
+                            <!-- NE -->
+                            <Label Text="NE" 
+                                   FontSize="14" 
+                                   TextColor="#999"
+                                   HorizontalOptions="End"
+                                   VerticalOptions="Start"
+                                   Margin="0,25,-15,0"
+                                   Rotation="-45" />
+
+                            <!-- SE -->
+                            <Label Text="SE" 
+                                   FontSize="14" 
+                                   TextColor="#999"
+                                   HorizontalOptions="End"
+                                   VerticalOptions="End"
+                                   Margin="0,0,-15,25"
+                                   Rotation="45" />
+
+                            <!-- SW -->
+                            <Label Text="SW" 
+                                   FontSize="14" 
+                                   TextColor="#999"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="End"
+                                   Margin="-15,0,0,25"
+                                   Rotation="-45" />
+
+                            <!-- NW -->
+                            <Label Text="NW" 
+                                   FontSize="14" 
+                                   TextColor="#999"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   Margin="-15,25,0,0"
+                                   Rotation="45" />
+                        </Grid>
+
+                        <!-- Center dot -->
+                        <Ellipse WidthRequest="12" 
+                                 HeightRequest="12"
+                                 Fill="#FF8C00"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center" />
+
+                        <!-- Navigation Arrow -->
+                        <AbsoluteLayout x:Name="ArrowContainer" 
+                                        WidthRequest="280" 
+                                        HeightRequest="280"
+                                        Rotation="0"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+
+                            <!-- Red arrow pointing to target -->
+                            <Path AbsoluteLayout.LayoutBounds="0,0,280,280"
+                                  AbsoluteLayout.LayoutFlags="None">
+                                <Path.Data>
+                                    <PathGeometry>
+                                            <PathFigure StartPoint="140,60" IsClosed="True">
+                                            <LineSegment Point="125,140"/>
+                                            <LineSegment Point="140,135"/>
+                                            <LineSegment Point="155,140"/>
+                                        </PathFigure>
+                                    </PathGeometry>
+                                </Path.Data>
+                                <Path.Fill>
+                                    <SolidColorBrush Color="#FF4444"/>
+                                </Path.Fill>
+                                <Path.Stroke>
+                                    <SolidColorBrush Color="#CC0000"/>
+                                </Path.Stroke>
+                                <Path.StrokeThickness>2</Path.StrokeThickness>
+                            </Path>
+                        </AbsoluteLayout>
+
+                        <!-- Heading degree display -->
+                        <Label x:Name="HeadingLabel" 
+                               Text="0°"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#FF8C00"
+                               BackgroundColor="#1a1a1a"
+                               Padding="8,4"
+                               HorizontalOptions="Center"
+                               VerticalOptions="End"
+                               Margin="0,0,0,10" />
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
 
@@ -56,32 +210,32 @@
             <Border BackgroundColor="#1a1a1a" Stroke="#333" StrokeShape="RoundRectangle 10" Padding="15">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="🎯 Target Information" 
-               FontSize="18" 
-               FontAttributes="Bold" 
-               TextColor="White" 
-               HorizontalTextAlignment="Center" />
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="White" 
+                           HorizontalTextAlignment="Center" />
 
                     <!-- Target position Label -->
                     <Label x:Name="TargetPositionLabel" 
-               Text="Target GPS position:" 
-               FontSize="14" 
-               FontAttributes="Bold" 
-               HorizontalTextAlignment="Center" 
-               TextColor="LightGray"/>
+                           Text="Target GPS position:" 
+                           FontSize="14" 
+                           FontAttributes="Bold" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="LightGray"/>
 
                     <Label x:Name="TargetLocationLabel" 
-               Text="-" 
-               FontSize="16" 
-               HorizontalTextAlignment="Center" 
-               TextColor="White"/>
+                           Text="-" 
+                           FontSize="16" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="White"/>
 
                     <!-- Distance Display -->
                     <Label x:Name="DistanceLabel" 
-               Text="Distance: N/A" 
-               FontSize="20" 
-               FontAttributes="Bold" 
-               HorizontalTextAlignment="Center" 
-               TextColor="White"/>
+                           Text="Distance: N/A" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           HorizontalTextAlignment="Center" 
+                           TextColor="White"/>
                 </VerticalStackLayout>
             </Border>
 
