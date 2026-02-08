@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json;
+using SimpleNavigator.Localization;
 
 namespace SimpleNavigator
 {
@@ -60,6 +61,8 @@ namespace SimpleNavigator
 
     public partial class MainPage : ContentPage
     {
+        private sealed record LanguageOption(string Name, string CultureCode);
+
         private Location targetLocation = null;
         private bool isCompassActive = false;
         private IDispatcherTimer gpsTimer;
@@ -68,6 +71,9 @@ namespace SimpleNavigator
         private Location lastKnownLocation;
         private ObservableCollection<SavedLocation> savedLocations;
         private SavedLocation selectedLocation;
+        private bool isUpdatingLanguage;
+        private List<LanguageOption> languageOptions = [];
+        private Picker LanguagePickerControl => this.FindByName<Picker>("LanguagePicker");
 
         public MainPage()
         {
@@ -77,15 +83,18 @@ namespace SimpleNavigator
             savedLocations = new ObservableCollection<SavedLocation>();
             SavedLocationsPicker.ItemsSource = savedLocations;
 
+            languageOptions = BuildLanguageOptions();
+            RefreshLanguagePicker();
+
             LoadSavedLocations();
             UpdateLocationListVisibility();
+            ApplyCulture();
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
             StartGpsUpdates();
-
         }
 
         protected override void OnDisappearing()
@@ -99,6 +108,102 @@ namespace SimpleNavigator
             }
 
             SaveLocationsToStorage();
+        }
+
+        private static string L(string key) => LocalizationResourceManager.Instance[key];
+
+        private List<LanguageOption> BuildLanguageOptions() =>
+        [
+            new LanguageOption(L("LanguageEnglish"), "en-US"),
+            new LanguageOption(L("LanguageSlovak"), "sk-SK")
+        ];
+
+        private void RefreshLanguagePicker()
+        {
+            isUpdatingLanguage = true;
+            try
+            {
+                var current = (LanguagePickerControl.SelectedItem as LanguageOption)?.CultureCode
+                              ?? LocalizationResourceManager.Instance.CurrentCulture.Name;
+
+                languageOptions = BuildLanguageOptions();
+                LanguagePickerControl.ItemsSource = languageOptions;
+                LanguagePickerControl.SelectedItem = languageOptions.FirstOrDefault(l => l.CultureCode == current)
+                                                     ?? languageOptions[0];
+            }
+            finally
+            {
+                isUpdatingLanguage = false;
+            }
+        }
+
+        private void OnLanguageChanged(object sender, EventArgs e)
+        {
+            if (isUpdatingLanguage)
+            {
+                return;
+            }
+
+            if (LanguagePickerControl.SelectedItem is LanguageOption option)
+            {
+                LocalizationResourceManager.Instance.SetCulture(CultureInfo.GetCultureInfo(option.CultureCode));
+                Preferences.Default.Set("AppCulture", option.CultureCode);
+                RefreshLanguagePicker();
+                ApplyCulture();
+            }
+        }
+
+        private void ApplyCulture()
+        {
+            UpdateCompassStatusLabel();
+            UpdateTargetLabel();
+            UpdateDistanceDisplay();
+            UpdateGpsLabel();
+        }
+
+        private void UpdateCompassStatusLabel()
+        {
+            if (isCompassActive)
+            {
+                CompassStatusLabel.Text = L("CompassOn");
+                CompassStatusLabel.TextColor = Colors.Green;
+            }
+            else
+            {
+                CompassStatusLabel.Text = L("CompassOff");
+                CompassStatusLabel.TextColor = Colors.Red;
+            }
+        }
+
+        private void UpdateTargetLabel()
+        {
+            if (targetLocation == null)
+            {
+                TargetLocationLabel.Text = L("TargetGpsNotAvailable");
+                return;
+            }
+
+            TargetLocationLabel.Text = string.Format(
+                CultureInfo.CurrentCulture,
+                L("TargetLocationFormat"),
+                targetLocation.Latitude,
+                targetLocation.Longitude);
+        }
+
+        private void UpdateGpsLabel()
+        {
+            if (lastKnownLocation != null)
+            {
+                GpsLabel.Text = string.Format(
+                    CultureInfo.CurrentCulture,
+                    L("GpsCurrentFormat"),
+                    lastKnownLocation.Latitude,
+                    lastKnownLocation.Longitude);
+            }
+            else
+            {
+                GpsLabel.Text = L("GpsRetrieving");
+            }
         }
 
         private async Task UpdateGpsLocation()
@@ -125,7 +230,11 @@ namespace SimpleNavigator
 
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        GpsLabel.Text = $"Current GPS: {location.Latitude:F6}, {location.Longitude:F6}";
+                        GpsLabel.Text = string.Format(
+                            CultureInfo.CurrentCulture,
+                            L("GpsCurrentFormat"),
+                            location.Latitude,
+                            location.Longitude);
                         UpdateDistanceDisplay();
                     });
 
@@ -142,7 +251,7 @@ namespace SimpleNavigator
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        GpsLabel.Text = "GPS: Unavailable (pls wait...)";
+                        GpsLabel.Text = L("GpsUnavailableWait");
                     });
                 }
             }
@@ -150,14 +259,14 @@ namespace SimpleNavigator
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    GpsLabel.Text = "GPS: Update canceled";
+                    GpsLabel.Text = L("GpsUpdateCanceled");
                 });
             }
             catch (Exception ex)
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    GpsLabel.Text = $"GPS: Unavailable ({ex.Message})";
+                    GpsLabel.Text = string.Format(CultureInfo.CurrentCulture, L("GpsUnavailableFormat"), ex.Message);
                 });
             }
             finally
@@ -201,7 +310,12 @@ namespace SimpleNavigator
 
                 if (location != null)
                 {
-                    string name = await DisplayPromptAsync("Save Location", "Enter name for this location:", "Save", "Cancel", "My Location");
+                    string name = await DisplayPromptAsync(
+                        L("SaveLocationTitle"),
+                        L("EnterNamePrompt"),
+                        L("SaveButton"),
+                        L("CancelButton"),
+                        L("MyLocationDefault"));
 
                     if (!string.IsNullOrWhiteSpace(name))
                     {
@@ -216,17 +330,23 @@ namespace SimpleNavigator
                         SaveLocationsToStorage();
                         UpdateLocationListVisibility();
 
-                        await DisplayAlert("Success", $"Location '{name}' saved successfully!", "OK");
+                        await DisplayAlert(
+                            L("SuccessTitle"),
+                            string.Format(CultureInfo.CurrentCulture, L("LocationSavedFormat"), name),
+                            L("OkButton"));
                     }
                 }
                 else
                 {
-                    await DisplayAlert("Error", "Unable to get current GPS position, try again...", "OK");
+                    await DisplayAlert(L("ErrorTitle"), L("UnableGetGps"), L("OkButton"));
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error while saving the location: {ex.Message}", "OK");
+                await DisplayAlert(
+                    L("ErrorTitle"),
+                    string.Format(CultureInfo.CurrentCulture, L("SaveLocationErrorFormat"), ex.Message),
+                    L("OkButton"));
             }
         }
 
@@ -234,13 +354,34 @@ namespace SimpleNavigator
         {
             try
             {
-                string name = await DisplayPromptAsync("Add Location", "Enter name for this location:", "Next", "Cancel");
+                string name = await DisplayPromptAsync(
+                    L("AddLocationTitle"),
+                    L("EnterNamePrompt"),
+                    L("NextButton"),
+                    L("CancelButton"));
+
                 if (string.IsNullOrWhiteSpace(name)) return;
 
-                string latString = await DisplayPromptAsync("Add Location", "Enter latitude:", "Next", "Cancel", "", -1, Keyboard.Default);
+                string latString = await DisplayPromptAsync(
+                    L("AddLocationTitle"),
+                    L("EnterLatitudePrompt"),
+                    L("NextButton"),
+                    L("CancelButton"),
+                    "",
+                    -1,
+                    Keyboard.Default);
+
                 if (string.IsNullOrWhiteSpace(latString)) return;
 
-                string lonString = await DisplayPromptAsync("Add Location", "Enter longitude:", "Save", "Cancel", "", -1, Keyboard.Default);
+                string lonString = await DisplayPromptAsync(
+                    L("AddLocationTitle"),
+                    L("EnterLongitudePrompt"),
+                    L("SaveButton"),
+                    L("CancelButton"),
+                    "",
+                    -1,
+                    Keyboard.Default);
+
                 if (string.IsNullOrWhiteSpace(lonString)) return;
 
                 if (TryParseCoordinate(latString, out double lat) && TryParseCoordinate(lonString, out double lon))
@@ -258,21 +399,27 @@ namespace SimpleNavigator
                         SaveLocationsToStorage();
                         UpdateLocationListVisibility();
 
-                        await DisplayAlert("Success", $"Location '{name}' added successfully!", "OK");
+                        await DisplayAlert(
+                            L("SuccessTitle"),
+                            string.Format(CultureInfo.CurrentCulture, L("LocationAddedFormat"), name),
+                            L("OkButton"));
                     }
                     else
                     {
-                        await DisplayAlert("Error", "Invalid coordinates! Latitude must be between -90 and 90, longitude between -180 and 180.", "OK");
+                        await DisplayAlert(L("ErrorTitle"), L("InvalidCoordinatesRange"), L("OkButton"));
                     }
                 }
                 else
                 {
-                    await DisplayAlert("Error", "Invalid number format! Please enter valid coordinates.", "OK");
+                    await DisplayAlert(L("ErrorTitle"), L("InvalidNumberFormat"), L("OkButton"));
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error while adding location: {ex.Message}", "OK");
+                await DisplayAlert(
+                    L("ErrorTitle"),
+                    string.Format(CultureInfo.CurrentCulture, L("AddLocationErrorFormat"), ex.Message),
+                    L("OkButton"));
             }
         }
 
@@ -283,7 +430,7 @@ namespace SimpleNavigator
             {
                 selectedLocation = location;
                 targetLocation = new Location(location.Latitude, location.Longitude);
-                TargetLocationLabel.Text = $"{location.Latitude:F6}, {location.Longitude:F6}";
+                UpdateTargetLabel();
                 UpdateDistanceDisplay();
             }
         }
@@ -292,21 +439,30 @@ namespace SimpleNavigator
         {
             if (selectedLocation == null)
             {
-                await DisplayAlert("Error", "Please select a location from the list first!", "OK");
+                await DisplayAlert(L("ErrorTitle"), L("SelectLocationFirstError"), L("OkButton"));
                 return;
             }
 
-            string action = await DisplayActionSheet($"Edit '{selectedLocation.Name}'", "Cancel", "Delete", "Rename", "Change Coordinates");
+            var renameAction = L("ActionRename");
+            var changeCoordinatesAction = L("ActionChangeCoordinates");
+            var deleteAction = L("ActionDelete");
+
+            string action = await DisplayActionSheet(
+                string.Format(CultureInfo.CurrentCulture, L("EditLocationActionSheetTitle"), selectedLocation.Name),
+                L("CancelButton"),
+                deleteAction,
+                renameAction,
+                changeCoordinatesAction);
 
             switch (action)
             {
-                case "Rename":
+                case var _ when action == renameAction:
                     await RenameLocation(selectedLocation);
                     break;
-                case "Change Coordinates":
+                case var _ when action == changeCoordinatesAction:
                     await ChangeCoordinates(selectedLocation);
                     break;
-                case "Delete":
+                case var _ when action == deleteAction:
                     await DeleteLocation(selectedLocation);
                     break;
             }
@@ -314,21 +470,43 @@ namespace SimpleNavigator
 
         private async Task RenameLocation(SavedLocation location)
         {
-            string newName = await DisplayPromptAsync("Rename Location", "Enter new name:", "Save", "Cancel", location.Name);
+            string newName = await DisplayPromptAsync(
+                L("RenameLocationTitle"),
+                L("EnterNewNamePrompt"),
+                L("SaveButton"),
+                L("CancelButton"),
+                location.Name);
+
             if (!string.IsNullOrWhiteSpace(newName) && newName.Trim() != location.Name)
             {
                 location.Name = newName.Trim();
-                SaveLocationsToStorage(); // Uložiť zmeny
-                await DisplayAlert("Success", "Location renamed successfully!", "OK");
+                SaveLocationsToStorage();
+                await DisplayAlert(L("SuccessTitle"), L("LocationRenamedSuccess"), L("OkButton"));
             }
         }
 
         private async Task ChangeCoordinates(SavedLocation location)
         {
-            string latString = await DisplayPromptAsync("Change Coordinates", "Enter new latitude:", "Next", "Cancel", location.Latitude.ToString("F6"), -1, Keyboard.Default);
+            string latString = await DisplayPromptAsync(
+                L("ChangeCoordinatesTitle"),
+                L("EnterNewLatitudePrompt"),
+                L("NextButton"),
+                L("CancelButton"),
+                location.Latitude.ToString("F6"),
+                -1,
+                Keyboard.Default);
+
             if (string.IsNullOrWhiteSpace(latString)) return;
 
-            string lonString = await DisplayPromptAsync("Change Coordinates", "Enter new longitude:", "Save", "Cancel", location.Longitude.ToString("F6"), -1, Keyboard.Default);
+            string lonString = await DisplayPromptAsync(
+                L("ChangeCoordinatesTitle"),
+                L("EnterNewLongitudePrompt"),
+                L("SaveButton"),
+                L("CancelButton"),
+                location.Longitude.ToString("F6"),
+                -1,
+                Keyboard.Default);
+
             if (string.IsNullOrWhiteSpace(lonString)) return;
 
             if (TryParseCoordinate(latString, out double lat) && TryParseCoordinate(lonString, out double lon))
@@ -341,26 +519,31 @@ namespace SimpleNavigator
                     if (selectedLocation == location)
                     {
                         targetLocation = new Location(lat, lon);
-                        TargetLocationLabel.Text = $"{lat:F6}, {lon:F6}";
+                        UpdateTargetLabel();
                         UpdateDistanceDisplay();
                     }
 
-                    await DisplayAlert("Success", "Coordinates updated successfully!", "OK");
+                    await DisplayAlert(L("SuccessTitle"), L("CoordinatesUpdatedSuccess"), L("OkButton"));
                 }
                 else
                 {
-                    await DisplayAlert("Error", "Invalid coordinates!", "OK");
+                    await DisplayAlert(L("ErrorTitle"), L("InvalidCoordinates"), L("OkButton"));
                 }
             }
             else
             {
-                await DisplayAlert("Error", "Invalid number format!", "OK");
+                await DisplayAlert(L("ErrorTitle"), L("InvalidNumberFormat"), L("OkButton"));
             }
         }
 
         private async Task DeleteLocation(SavedLocation location)
         {
-            bool confirm = await DisplayAlert("Delete Location", $"Are you sure you want to delete '{location.Name}'?", "Delete", "Cancel");
+            bool confirm = await DisplayAlert(
+                L("DeleteLocationTitle"),
+                string.Format(CultureInfo.CurrentCulture, L("DeleteLocationConfirmFormat"), location.Name),
+                L("ActionDelete"),
+                L("CancelButton"));
+
             if (confirm)
             {
                 savedLocations.Remove(location);
@@ -369,13 +552,14 @@ namespace SimpleNavigator
                 {
                     selectedLocation = null;
                     targetLocation = null;
-                    TargetLocationLabel.Text = "Target GPS: N/A";
-                    DistanceLabel.Text = "Distance: N/A";
+                    TargetLocationLabel.Text = L("TargetGpsNotAvailable");
+                    DistanceLabel.Text = L("DistanceNotAvailable");
+                    DistanceLabel.TextColor = Colors.White;
                     SavedLocationsPicker.SelectedItem = null;
                 }
                 UpdateLocationListVisibility();
                 SaveLocationsToStorage();
-                await DisplayAlert("Success", "Location deleted successfully!", "OK");
+                await DisplayAlert(L("SuccessTitle"), L("LocationDeletedSuccess"), L("OkButton"));
             }
         }
 
@@ -396,7 +580,7 @@ namespace SimpleNavigator
         {
             if (targetLocation == null)
             {
-                DisplayAlert("Error", "First, select a target location!", "OK");
+                DisplayAlert(L("ErrorTitle"), L("SelectTargetFirstError"), L("OkButton"));
                 return;
             }
 
@@ -405,15 +589,13 @@ namespace SimpleNavigator
             if (isCompassActive)
             {
                 Compass.Start(SensorSpeed.UI);
-                CompassStatusLabel.Text = "Compass: ON";
-                CompassStatusLabel.TextColor = Colors.Green;
             }
             else
             {
                 Compass.Stop();
-                CompassStatusLabel.Text = "Compass: OFF";
-                CompassStatusLabel.TextColor = Colors.Red;
             }
+
+            UpdateCompassStatusLabel();
         }
 
         private void OnCompassChanged(object sender, CompassChangedEventArgs e)
@@ -426,8 +608,8 @@ namespace SimpleNavigator
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                ArrowContainer.Rotation = rotation;                               
-                CompassRose.Rotation = -heading;                              
+                ArrowContainer.Rotation = rotation;
+                CompassRose.Rotation = -heading;
                 HeadingLabel.Text = $"{(int)heading}°";
                 UpdateDistanceDisplay();
             });
@@ -504,7 +686,7 @@ namespace SimpleNavigator
                     var locationList = JsonSerializer.Deserialize<List<LocationData>>(json);
                     if (locationList != null)
                     {
-                        savedLocations.Clear(); // Vyčistiť pred načítaním
+                        savedLocations.Clear();
                         foreach (var item in locationList)
                         {
                             var savedLocation = new SavedLocation
@@ -518,7 +700,7 @@ namespace SimpleNavigator
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Preferences.Default.Remove("SavedLocations");
             }
@@ -528,7 +710,8 @@ namespace SimpleNavigator
         {
             if (targetLocation == null || lastKnownLocation == null)
             {
-                DistanceLabel.Text = "Distance: N/A";
+                DistanceLabel.Text = L("DistanceNotAvailable");
+                DistanceLabel.TextColor = Colors.White;
                 return;
             }
 
@@ -537,7 +720,7 @@ namespace SimpleNavigator
             if (distanceKm < 1.0)
             {
                 double distanceM = distanceKm * 1000;
-                DistanceLabel.Text = $"Distance: {distanceM:F0} m";
+                DistanceLabel.Text = string.Format(CultureInfo.CurrentCulture, L("DistanceMetersFormat"), distanceM);
 
                 if (distanceM < 10)
                     DistanceLabel.TextColor = Colors.LimeGreen;
@@ -548,7 +731,7 @@ namespace SimpleNavigator
             }
             else
             {
-                DistanceLabel.Text = $"Distance: {distanceKm:F2} km";
+                DistanceLabel.Text = string.Format(CultureInfo.CurrentCulture, L("DistanceKilometersFormat"), distanceKm);
                 DistanceLabel.TextColor = Colors.Red;
             }
         }

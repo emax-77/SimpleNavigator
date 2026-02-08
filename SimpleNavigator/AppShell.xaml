@@ -4,11 +4,12 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SimpleNavigator"
+    xmlns:localization="clr-namespace:SimpleNavigator.Localization"
     Shell.FlyoutBehavior="Flyout"
-    Title="SimpleNavigator">
+    Title="{localization:Translate Key=AppTitle}">
 
     <ShellContent
-        Title="Home"
+        Title="{localization:Translate Key=HomeTitle}"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

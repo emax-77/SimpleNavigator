@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <data name="AppTitle"><value>SimpleNavigator</value></data>
+  <data name="HomeTitle"><value>Home</value></data>
+
+  <data name="LanguageLabel"><value>Language</value></data>
+  <data name="LanguageEnglish"><value>English</value></data>
+  <data name="LanguageSlovak"><value>Slovak</value></data>
+
+  <data name="GpsRetrieving"><value>GPS: retrieving GPS data...</value></data>
+  <data name="GpsCurrentFormat"><value>Current GPS: {0:F6}, {1:F6}</value></data>
+  <data name="GpsUnavailableWait"><value>GPS: Unavailable (pls wait...)</value></data>
+  <data name="GpsUpdateCanceled"><value>GPS: Update canceled</value></data>
+  <data name="GpsUnavailableFormat"><value>GPS: Unavailable ({0})</value></data>
+
+  <data name="CompassOn"><value>Compass: ON</value></data>
+  <data name="CompassOff"><value>Compass: OFF</value></data>
+
+  <data name="StartNavigation"><value>🧭 Start Navigation</value></data>
+
+  <data name="TargetGpsPositionLabel"><value>🎯 Target GPS position:</value></data>
+  <data name="TargetGpsNotAvailable"><value>Target GPS: N/A</value></data>
+  <data name="TargetLocationFormat"><value>{0:F6}, {1:F6}</value></data>
+
+  <data name="DistanceNotAvailable"><value>Distance: N/A</value></data>
+  <data name="DistanceMetersFormat"><value>Distance: {0:F0} m</value></data>
+  <data name="DistanceKilometersFormat"><value>Distance: {0:F2} km</value></data>
+
+  <data name="SaveCurrentLocation"><value>💾 Save Current Location</value></data>
+  <data name="AddManualCoordinates"><value>📝 Add Manual Coordinates</value></data>
+  <data name="SelectSavedLocationLabel"><value>Select saved location:</value></data>
+  <data name="ChooseLocationTitle"><value>Choose location...</value></data>
+  <data name="EditSelectedLocation"><value>✏️ Edit Selected Location</value></data>
+
+  <data name="SaveLocationTitle"><value>Save Location</value></data>
+  <data name="AddLocationTitle"><value>Add Location</value></data>
+  <data name="RenameLocationTitle"><value>Rename Location</value></data>
+  <data name="ChangeCoordinatesTitle"><value>Change Coordinates</value></data>
+  <data name="DeleteLocationTitle"><value>Delete Location</value></data>
+
+  <data name="EnterNamePrompt"><value>Enter name for this location:</value></data>
+  <data name="EnterNewNamePrompt"><value>Enter new name:</value></data>
+  <data name="EnterLatitudePrompt"><value>Enter latitude:</value></data>
+  <data name="EnterLongitudePrompt"><value>Enter longitude:</value></data>
+  <data name="EnterNewLatitudePrompt"><value>Enter new latitude:</value></data>
+  <data name="EnterNewLongitudePrompt"><value>Enter new longitude:</value></data>
+
+  <data name="SaveButton"><value>Save</value></data>
+  <data name="CancelButton"><value>Cancel</value></data>
+  <data name="NextButton"><value>Next</value></data>
+  <data name="OkButton"><value>OK</value></data>
+  <data name="MyLocationDefault"><value>My Location</value></data>
+
+  <data name="SuccessTitle"><value>Success</value></data>
+  <data name="ErrorTitle"><value>Error</value></data>
+
+  <data name="LocationSavedFormat"><value>Location '{0}' saved successfully!</value></data>
+  <data name="LocationAddedFormat"><value>Location '{0}' added successfully!</value></data>
+  <data name="LocationRenamedSuccess"><value>Location renamed successfully!</value></data>
+  <data name="CoordinatesUpdatedSuccess"><value>Coordinates updated successfully!</value></data>
+  <data name="LocationDeletedSuccess"><value>Location deleted successfully!</value></data>
+
+  <data name="UnableGetGps"><value>Unable to get current GPS position, try again...</value></data>
+  <data name="SaveLocationErrorFormat"><value>Error while saving the location: {0}</value></data>
+  <data name="AddLocationErrorFormat"><value>Error while adding location: {0}</value></data>
+
+  <data name="InvalidCoordinatesRange"><value>Invalid coordinates! Latitude must be between -90 and 90, longitude between -180 and 180.</value></data>
+  <data name="InvalidCoordinates"><value>Invalid coordinates!</value></data>
+  <data name="InvalidNumberFormat"><value>Invalid number format! Please enter valid coordinates.</value></data>
+
+  <data name="SelectLocationFirstError"><value>Please select a location from the list first!</value></data>
+  <data name="SelectTargetFirstError"><value>First, select a target location!</value></data>
+
+  <data name="EditLocationActionSheetTitle"><value>Edit '{0}'</value></data>
+  <data name="ActionDelete"><value>Delete</value></data>
+  <data name="ActionRename"><value>Rename</value></data>
+  <data name="ActionChangeCoordinates"><value>Change Coordinates</value></data>
+
+  <data name="DeleteLocationConfirmFormat"><value>Are you sure you want to delete '{0}'?</value></data>
+</root>

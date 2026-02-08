@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <data name="AppTitle"><value>SimpleNavigator</value></data>
+  <data name="HomeTitle"><value>Domov</value></data>
+
+  <data name="LanguageLabel"><value>Jazyk</value></data>
+  <data name="LanguageEnglish"><value>Angličtina</value></data>
+  <data name="LanguageSlovak"><value>Slovenčina</value></data>
+
+  <data name="GpsRetrieving"><value>GPS: získavam údaje...</value></data>
+  <data name="GpsCurrentFormat"><value>Aktuálna GPS: {0:F6}, {1:F6}</value></data>
+  <data name="GpsUnavailableWait"><value>GPS: Nedostupné (čakaj...)</value></data>
+  <data name="GpsUpdateCanceled"><value>GPS: Aktualizácia zrušená</value></data>
+  <data name="GpsUnavailableFormat"><value>GPS: Nedostupné (GPS nie je dostupné alebo je vypnuté)</value></data>
+
+  <data name="CompassOn"><value>Kompas: ZAPNUTÝ</value></data>
+  <data name="CompassOff"><value>Kompas: VYPNUTÝ</value></data>
+
+  <data name="StartNavigation"><value>🧭 Spustiť navigáciu</value></data>
+
+  <data name="TargetGpsPositionLabel"><value>🎯 Cieľová GPS pozícia:</value></data>
+  <data name="TargetGpsNotAvailable"><value>Cieľová GPS: </value></data>
+  <data name="TargetLocationFormat"><value>{0:F6}, {1:F6}</value></data>
+
+  <data name="DistanceNotAvailable"><value>Vzdialenosť: </value></data>
+  <data name="DistanceMetersFormat"><value>Vzdialenosť: {0:F0} m</value></data>
+  <data name="DistanceKilometersFormat"><value>Vzdialenosť: {0:F2} km</value></data>
+
+  <data name="SaveCurrentLocation"><value>💾 Uložiť aktuálnu polohu</value></data>
+  <data name="AddManualCoordinates"><value>📝 Pridať manuálne súradnice</value></data>
+  <data name="SelectSavedLocationLabel"><value>Vyber uloženú polohu:</value></data>
+  <data name="ChooseLocationTitle"><value>Vyber polohu...</value></data>
+  <data name="EditSelectedLocation"><value>✏️ Upraviť vybranú polohu</value></data>
+
+  <data name="SaveLocationTitle"><value>Uložiť polohu</value></data>
+  <data name="AddLocationTitle"><value>Pridať polohu</value></data>
+  <data name="RenameLocationTitle"><value>Premenovať polohu</value></data>
+  <data name="ChangeCoordinatesTitle"><value>Zmeniť súradnice</value></data>
+  <data name="DeleteLocationTitle"><value>Vymazať polohu</value></data>
+
+  <data name="EnterNamePrompt"><value>Zadaj názov tejto polohy:</value></data>
+  <data name="EnterNewNamePrompt"><value>Zadaj nový názov:</value></data>
+  <data name="EnterLatitudePrompt"><value>Zadaj zemepisnú šírku:</value></data>
+  <data name="EnterLongitudePrompt"><value>Zadaj zemepisnú dĺžku:</value></data>
+  <data name="EnterNewLatitudePrompt"><value>Zadaj novú šírku:</value></data>
+  <data name="EnterNewLongitudePrompt"><value>Zadaj novú dĺžku:</value></data>
+
+  <data name="SaveButton"><value>Uložiť</value></data>
+  <data name="CancelButton"><value>Zrušiť</value></data>
+  <data name="NextButton"><value>Ďalej</value></data>
+  <data name="OkButton"><value>OK</value></data>
+  <data name="MyLocationDefault"><value>Moja poloha</value></data>
+
+  <data name="SuccessTitle"><value>Úspech</value></data>
+  <data name="ErrorTitle"><value>Chyba</value></data>
+
+  <data name="LocationSavedFormat"><value>Poloha '{0}' bola uložená!</value></data>
+  <data name="LocationAddedFormat"><value>Poloha '{0}' bola pridaná!</value></data>
+  <data name="LocationRenamedSuccess"><value>Poloha bola premenovaná!</value></data>
+  <data name="CoordinatesUpdatedSuccess"><value>Súradnice boli aktualizované!</value></data>
+  <data name="LocationDeletedSuccess"><value>Poloha bola vymazaná!</value></data>
+
+  <data name="UnableGetGps"><value>Nepodarilo sa získať aktuálnu GPS pozíciu, skúste znova...</value></data>
+  <data name="SaveLocationErrorFormat"><value>Chyba pri ukladaní polohy: {0}</value></data>
+  <data name="AddLocationErrorFormat"><value>Chyba pri pridávaní polohy: {0}</value></data>
+
+  <data name="InvalidCoordinatesRange"><value>Neplatné súradnice! Šírka musí byť medzi -90 a 90, dĺžka medzi -180 a 180.</value></data>
+  <data name="InvalidCoordinates"><value>Neplatné súradnice!</value></data>
+  <data name="InvalidNumberFormat"><value>Neplatný formát čísla! Zadaj platné súradnice.</value></data>
+
+  <data name="SelectLocationFirstError"><value>Najprv vyberte polohu zo zoznamu!</value></data>
+  <data name="SelectTargetFirstError"><value>Najprv vyberte cieľovú polohu!</value></data>
+
+  <data name="EditLocationActionSheetTitle"><value>Upraviť '{0}'</value></data>
+  <data name="ActionDelete"><value>Vymazať</value></data>
+  <data name="ActionRename"><value>Premenovať</value></data>
+  <data name="ActionChangeCoordinates"><value>Zmeniť súradnice</value></data>
+
+  <data name="DeleteLocationConfirmFormat"><value>Naozaj chcete vymazať '{0}'?</value></data>
+</root>

@@ -1,23 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:SimpleNavigator.Localization"
              x:Class="SimpleNavigator.MainPage">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15" BackgroundColor="Black">
-
+            
             <!-- GPS + Compass -->
             <Border BackgroundColor="#1a1a1a" Stroke="#333" StrokeShape="RoundRectangle 10" Padding="15" Margin="0,10">
                 <VerticalStackLayout Spacing="10">
                     <!-- GPS Position -->
                     <Label x:Name="GpsLabel" 
-                           Text="GPS: retrieving GPS data..." 
+                           Text="{localization:Translate Key=GpsRetrieving}" 
                            FontSize="16" 
                            HorizontalTextAlignment="Center" 
                            TextColor="White" />
 
                     <!-- Compass Status -->
                     <Label x:Name="CompassStatusLabel" 
-                           Text="Compass: OFF" 
+                           Text="{localization:Translate Key=CompassOff}" 
                            FontSize="16" 
                            TextColor="Red" 
                            HorizontalTextAlignment="Center" />
@@ -30,7 +31,7 @@
                     
                     <!-- Navigate Button -->
                     <Button x:Name="NavigateButton" 
-                            Text="🧭 Start Navigation" 
+                            Text="{localization:Translate Key=StartNavigation}" 
                             Clicked="OnShowDirectionClicked" 
                             BackgroundColor="Orange" 
                             TextColor="White" 
@@ -118,7 +119,7 @@
                                    TextColor="#999"
                                    HorizontalOptions="End"
                                    VerticalOptions="Start"
-                                   Margin="0,25,-15,0"
+                                   Margin="0,20,-15,0"
                                    Rotation="-45" />
 
                             <!-- SE -->
@@ -136,7 +137,7 @@
                                    TextColor="#999"
                                    HorizontalOptions="Start"
                                    VerticalOptions="End"
-                                   Margin="-15,0,0,25"
+                                   Margin="-20,0,0,25"
                                    Rotation="-45" />
 
                             <!-- NW -->
@@ -145,7 +146,7 @@
                                    TextColor="#999"
                                    HorizontalOptions="Start"
                                    VerticalOptions="Start"
-                                   Margin="-15,25,0,0"
+                                   Margin="-25,20,0,0"
                                    Rotation="45" />
                         </Grid>
 
@@ -196,7 +197,7 @@
                                Padding="8,4"
                                HorizontalOptions="Center"
                                VerticalOptions="End"
-                               Margin="0,0,0,10" />
+                               Margin="0,0,0,75" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -207,21 +208,21 @@
                    
                     <!-- Target position Label -->
                     <Label x:Name="TargetPositionLabel" 
-                           Text="🎯 Target GPS position:" 
+                           Text="{localization:Translate Key=TargetGpsPositionLabel}" 
                            FontSize="14" 
                            FontAttributes="Bold" 
                            HorizontalTextAlignment="Center" 
                            TextColor="LightGray"/>
 
                     <Label x:Name="TargetLocationLabel" 
-                           Text="-" 
+                           Text="{localization:Translate Key=TargetGpsNotAvailable}" 
                            FontSize="16" 
                            HorizontalTextAlignment="Center" 
                            TextColor="White"/>
 
                     <!-- Distance Display -->
                     <Label x:Name="DistanceLabel" 
-                           Text="Distance: N/A" 
+                           Text="{localization:Translate Key=DistanceNotAvailable}" 
                            FontSize="20" 
                            FontAttributes="Bold" 
                            HorizontalTextAlignment="Center" 
@@ -235,26 +236,26 @@
                     
                     <!-- Save Current Location Button -->
                     <Button x:Name="SaveLocationButton" 
-                            Text="💾 Save Current Location" 
+                            Text="{localization:Translate Key=SaveCurrentLocation}" 
                             Clicked="OnSaveLocationClicked" 
                             BackgroundColor="Green" 
                             TextColor="White" />
 
                     <!-- Add Manual Location Button -->
                     <Button x:Name="AddManualLocationButton" 
-                            Text="📝 Add Manual Coordinates" 
+                            Text="{localization:Translate Key=AddManualCoordinates}" 
                             Clicked="OnAddManualLocationClicked" 
                             BackgroundColor="Purple" 
                             TextColor="White" />
 
                     <!-- Saved Locations Picker -->
-                    <Label Text="Select saved location:" 
+                    <Label Text="{localization:Translate Key=SelectSavedLocationLabel}" 
                            FontSize="14" 
                            TextColor="White" />
 
                     <Picker x:Name="SavedLocationsPicker" 
-                            Title="Choose location..." 
-                            BackgroundColor="White" 
+                            Title="{localization:Translate Key=ChooseLocationTitle}" 
+                            BackgroundColor="Gray" 
                             TextColor="Black" 
                             SelectedIndexChanged="OnLocationSelected" 
                             IsVisible="False" 
@@ -262,12 +263,28 @@
 
                     <!-- Edit Location Button -->
                     <Button x:Name="EditLocationButton" 
-                            Text="✏️ Edit Selected Location" 
+                            Text="{localization:Translate Key=EditSelectedLocation}" 
                             Clicked="OnEditLocationClicked" 
                             BackgroundColor="#FF8C00" 
                             TextColor="White" 
                             IsVisible="False" />
                 </VerticalStackLayout>
+            </Border>
+
+            <!-- Language -->
+            <Border BackgroundColor="#1a1a1a" Stroke="#333" StrokeShape="RoundRectangle 10" Padding="10" Margin="0,10">
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Label Text="{localization:Translate Key=LanguageLabel}"
+               FontSize="14"
+               TextColor="White"
+               VerticalOptions="Center" />
+                    <Picker x:Name="LanguagePicker"
+                Title="{localization:Translate Key=LanguageLabel}"
+                BackgroundColor="LightBlue"
+                TextColor="Black"
+                ItemDisplayBinding="{Binding Name}"
+                SelectedIndexChanged="OnLanguageChanged" />
+                </HorizontalStackLayout>
             </Border>
 
         </VerticalStackLayout>
