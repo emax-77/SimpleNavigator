@@ -4,11 +4,15 @@
 - hiking and geocaching
 - locating your parked car in a huge parking lot :)
 
-### Works offline - no internet access required. You need to allow GPS only.
-***---The app is still in development. New features like multilanguage support should be available in January 2026---***
+### What's new
+- multilanguage support (English-Slovak)
+- location management
 
-## Screenshots:
-![SimpleNavigatorScreenshot](https://github.com/user-attachments/assets/e8424889-ff1d-494c-85ba-c7b1fe805d60)
+### Works offline - no internet access required. You need to allow GPS only.
+
+## Screenshot:
+![Screenshot_SimpleNavigator](https://github.com/user-attachments/assets/ca39bdae-489d-4089-9165-2133efa6a38a)
+
 
 
 
