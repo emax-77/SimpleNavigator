@@ -10,8 +10,10 @@
 
 ### Works offline - no internet access required. You need to allow GPS only.
 
-## Screenshot:
+## Screenshots:
 ![Screenshot_SimpleNavigator](https://github.com/user-attachments/assets/ca39bdae-489d-4089-9165-2133efa6a38a)
+![Screenshot_2_SimpleNavigator](https://github.com/user-attachments/assets/ba2855c0-3048-4f82-b82e-101b61b5f8eb)
+
 
 
 
